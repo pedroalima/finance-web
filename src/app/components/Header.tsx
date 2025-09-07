@@ -1,7 +1,7 @@
 import { Appbar } from "react-native-paper";
 import type { NativeStackHeaderProps } from "@react-navigation/native-stack";
 
-export function Header({
+export default function Header({
   navigation,
   route,
   options,

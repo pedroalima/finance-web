@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 export type MaterialCommunityIconsGlyphs =
   keyof typeof MaterialCommunityIcons.glyphMap;
-import { Header } from "./components/Header";
+import Header from "./components/Header";
 import { Stack } from "expo-router";
 const queryClient = new QueryClient();
 

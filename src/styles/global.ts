@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
   },
   listContentContainer: {
     paddingVertical: 16,
-    paddingHorizontal: 0, // Remover padding horizontal para as seções
+    paddingHorizontal: 0,
   },
   sectionHeader: {
     fontSize: 14,
@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2, // Sombra para Android
+    gap: 12, // Espaçamento entre os elementos dentro do card
   },
   cardHeader: {
     flexDirection: "row",
@@ -117,6 +118,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
+  },
+  monthsContainer: {
+    flexDirection: "row",
+  },
+  monthCard: {
+    width: 80,
+    padding: 8,
+    marginHorizontal: 4,
+    borderRadius: 8,
+    backgroundColor: "#ffffffff",
+    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  monthCardActive: {
+    backgroundColor: "#6200ee",
+  },
+  monthText: {
+    color: "#333",
+    fontSize: 14,
+  },
+  monthTextActive: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 
