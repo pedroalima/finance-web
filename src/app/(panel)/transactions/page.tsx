@@ -167,74 +167,87 @@ export default function Transactions() {
           data={sections}
           keyExtractor={(item) => item.date}
           contentContainerStyle={styles.listContentContainer}
-          renderItem={({ item: section }) => (
-            <>
-              {section.data.length > 0 && (
-                <View>
-                  <Text style={styles.sectionHeader}>
-                    {section.date.toUpperCase()},{" "}
-                    {new Date(section.data[0].date)
-                      .toLocaleDateString("pt-BR", { weekday: "long" })
-                      .toUpperCase()}
-                  </Text>
-                  {section.data.map((item: Transaction) => (
-                    <Pressable
-                      key={item.id.toString()}
-                      onPress={() =>
-                        route.push({
-                          pathname: "/(panel)/transactions/[id]/edit/page",
-                          params: { id: item.id.toString() },
-                        })
-                      }
-                      style={styles.card}
-                    >
-                      <View style={styles.cardHeader}>
-                        <View style={styles.iconContainer}>
-                          <FontAwesome5
-                            name="utensils"
-                            size={20}
-                            color="#555"
-                          />
-                        </View>
-                        <View style={styles.detailsContainer}>
-                          <Text style={styles.description}>
-                            {item.description}
+          renderItem={({ item: section }) => {
+            // calcula total do dia
+            const dailyTotal = section.data.reduce((acc, t) => {
+              const value = Number(t.amount);
+              return t.type_id === 2 ? acc - value : acc + value; // type_id=2 → despesa
+            }, 0);
+
+            return (
+              <>
+                {section.data.length > 0 && (
+                  <View>
+                    <Text style={styles.sectionHeader}>
+                      {section.date.toUpperCase()},{" "}
+                      {new Date(section.data[0].date)
+                        .toLocaleDateString("pt-BR", { weekday: "long" })
+                        .toUpperCase()}
+                    </Text>
+
+                    {section.data.map((item: Transaction) => (
+                      <Pressable
+                        key={item.id.toString()}
+                        onPress={() =>
+                          route.push({
+                            pathname: "/(panel)/transactions/[id]/edit/page",
+                            params: { id: item.id.toString() },
+                          })
+                        }
+                        style={styles.card}
+                      >
+                        <View style={styles.cardHeader}>
+                          <View style={styles.iconContainer}>
+                            <FontAwesome5
+                              name="utensils"
+                              size={20}
+                              color="#555"
+                            />
+                          </View>
+                          <View style={styles.detailsContainer}>
+                            <Text style={styles.description}>
+                              {item.description}
+                            </Text>
+                            <Text style={styles.categoryAccount}>
+                              {item.category_id === 1
+                                ? "Receitas"
+                                : "Alimentação"}{" "}
+                              |{" "}
+                              {item.account_id === 1
+                                ? "Cartão de Crédito - Nubank"
+                                : "Carteira"}
+                              {item.installment && item.installment_number
+                                ? ` | Parcela ${item.installment_number}`
+                                : ""}
+                            </Text>
+                          </View>
+                          <Text
+                            style={[
+                              styles.amount,
+                              item.type_id === 2
+                                ? styles.expenseAmount
+                                : styles.incomeAmount,
+                            ]}
+                          >
+                            {item?.type_id === 2 ? "-" : "+"} R${" "}
+                            {Number(item.amount).toFixed(2).replace(".", ",")}
                           </Text>
-                          <Text style={styles.categoryAccount}>
-                            {item.category_id === 1
-                              ? "Receitas"
-                              : "Alimentação"}{" "}
-                            |{" "}
-                            {item.account_id === 1
-                              ? "Cartão de Crédito - Nubank"
-                              : "Carteira"}
-                            {item.installment && item.installment_number
-                              ? ` | Parcela ${item.installment_number}`
-                              : ""}
+                        </View>
+
+                        {/* total do dia (aparece em todas as transações do mesmo dia) */}
+                        <View style={styles.dailyTotalContainer}>
+                          <Text style={[styles.dailyTotalText]}>
+                            {dailyTotal < 0 ? "-" : "+"} R${" "}
+                            {Math.abs(dailyTotal).toFixed(2).replace(".", ",")}
                           </Text>
                         </View>
-                        <Text
-                          style={[
-                            styles.amount,
-                            item.type_id === 2
-                              ? styles.expenseAmount
-                              : styles.incomeAmount,
-                          ]}
-                        >
-                          {item?.type_id === 2 ? "-" : "+"} R${" "}
-                          {Number(item.amount).toFixed(2).replace(".", ",")}
-                        </Text>
-                      </View>
-                      <View style={styles.dailyTotalContainer}>
-                        {/* Exemplo de exibição do total, você precisaria calcular o valor real */}
-                        <Text style={styles.dailyTotalText}>-R$ 766,41</Text>
-                      </View>
-                    </Pressable>
-                  ))}
-                </View>
-              )}
-            </>
-          )}
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
+              </>
+            );
+          }}
         />
       ) : (
         <Text style={styles.noTransactionsText}>
