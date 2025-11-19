@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { TransactionTypes } from "@/src/enums/transactions";
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { formatDateToApi, parseCurrencyToNumber } from "@/src/utils/date";
 import { createTransaction } from "@/src/service/transactionsService";
 import { Transaction } from "@/src/types/transactions";
@@ -13,7 +13,7 @@ import TransactionForm from "@/src/app/components/form/TransactionForm";
 export default function CreateTransaction() {
   const navigation = useNavigation();
   const [show, setShow] = useState(false);
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   // const { userId } = route.params;
 
   const [transaction, setTransaction] = useState({

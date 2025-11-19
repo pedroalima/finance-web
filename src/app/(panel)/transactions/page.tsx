@@ -26,6 +26,7 @@ export default function Transactions() {
   } = useQuery({
     queryKey: ["transactions"],
     queryFn: () => getAllTransactions(),
+    refetchOnMount: true,
   });
 
   // calcula o índice do mês atual
