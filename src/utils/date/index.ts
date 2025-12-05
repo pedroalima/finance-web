@@ -57,21 +57,35 @@ export const parseCurrencyToNumber = (value: string | number) => {
   return Number(value.replace(/[^\d,-]/g, "").replace(",", "."));
 };
 
-export const generateMonths = (yearsBack = 1) => {
-  const now = new Date();
-  const result = [];
+type MonthItem = {
+  month: number;
+  year: number;
+  label: string;
+};
 
-  for (let y = yearsBack - 1; y >= 0; y--) {
-    const year = now.getFullYear() - y;
-    for (let m = 0; m < 12; m++) {
-      const month = String(m + 1).padStart(2, "0"); // 01, 02, ...
-      const yearShort = String(year).slice(-2); // 24, 25
-      result.push({
-        month: m + 1,
-        year,
-        label: `${month}/${yearShort}`,
-      });
-    }
+export const generateMonths = (): MonthItem[] => {
+  const now = new Date();
+
+  const currentMonth = now.getMonth(); // 0-11
+  const currentYear = now.getFullYear();
+
+  const result: MonthItem[] = [];
+
+  // Vamos de -12 até +12 (24 meses + o atual)
+  for (let i = -12; i <= 12; i++) {
+    const date = new Date(currentYear, currentMonth + i, 1);
+
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    const formattedMonth = String(month).padStart(2, "0");
+    const yearShort = String(year).slice(-2);
+
+    result.push({
+      month,
+      year,
+      label: `${formattedMonth}/${yearShort}`,
+    });
   }
 
   return result;

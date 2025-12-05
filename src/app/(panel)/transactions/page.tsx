@@ -30,7 +30,7 @@ export default function Transactions() {
   });
 
   // calcula o índice do mês atual
-  const months = generateMonths(2); // últimos 24 meses
+  const months = generateMonths(); // últimos 24 meses
 
   const initialMonthIndex = months.findIndex(
     (m) => m.month === currentMonth && m.year === currentYear
