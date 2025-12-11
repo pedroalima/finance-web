@@ -8,7 +8,7 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { formatDateToApi, parseCurrencyToNumber } from "@/src/utils/date";
 import { createTransaction } from "@/src/service/transactionsService";
 import { Transaction } from "@/src/types/transactions";
-import TransactionForm from "@/src/app/components/form/TransactionForm";
+import TransactionCreateForm from "@/src/app/components/form/TransactionCreateAndEditForm";
 
 export default function CreateTransaction() {
   const navigation = useNavigation();
@@ -58,7 +58,7 @@ export default function CreateTransaction() {
   };
 
   return (
-    <TransactionForm
+    <TransactionCreateForm
       defaultValues={transaction}
       onSubmit={onSubmit}
       loading={createTransactionMutation.isPending}

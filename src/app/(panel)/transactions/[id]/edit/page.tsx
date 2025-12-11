@@ -12,7 +12,7 @@ import { useNavigation } from "expo-router";
 import { useRoute } from "@react-navigation/native";
 import { TransactionTypes } from "@/src/enums/transactions";
 import { ActivityIndicator, Surface } from "react-native-paper";
-import TransactionForm from "@/src/app/components/form/TransactionForm";
+import TransactionEditForm from "@/src/app/components/form/TransactionCreateAndEditForm";
 
 export default function EditTransactionPage() {
   const navigation = useNavigation();
@@ -59,12 +59,9 @@ export default function EditTransactionPage() {
     }
   }, [transaction, setValue]);
 
-  console.log("transaction", transaction);
-
   // Mutation para atualizar
   const updateMutation = useMutation({
     mutationFn: (formData: any) => {
-      console.log("update", formData);
       return updateTransaction(id, {
         ...formData,
         amount: parseCurrencyToNumber(formData.amount),
@@ -125,7 +122,7 @@ export default function EditTransactionPage() {
     );
 
   return (
-    <TransactionForm
+    <TransactionEditForm
       defaultValues={transaction}
       onSubmit={onSubmit}
       loading={updateMutation.isPending}

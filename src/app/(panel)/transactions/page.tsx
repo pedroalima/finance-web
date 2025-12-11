@@ -26,7 +26,8 @@ export default function Transactions() {
   } = useQuery({
     queryKey: ["transactions"],
     queryFn: () => getAllTransactions(),
-    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: Infinity,
   });
 
   // calcula o índice do mês atual
@@ -112,155 +113,190 @@ export default function Transactions() {
             date,
             data: groupedTransactions[date],
           }))
-          .sort((a, b) => brDateToSortKey(b.date) - brDateToSortKey(a.date))
+          .sort((a, b) => brDateToSortKey(a.date) - brDateToSortKey(b.date))
       : [];
 
-  return (
-    <View style={styles.fullScreenContainer}>
-      {/* Mês selecionado */}
+  // ============================
+  // MonthSelector (INLINE)
+  // ============================
+  const MonthSelector = ({
+    listRef,
+    months,
+    selectedMonth,
+    selectedYear,
+    setSelectedMonth,
+    setSelectedYear,
+    initialMonthIndex,
+    styles,
+  }: any) => {
+    return (
       <View style={{ height: 40, padding: 1 }}>
         <FlatList
           ref={listRef}
-          data={months} // últimos 24 meses
+          data={months}
           horizontal
           contentContainerStyle={styles.monthsContainer}
           showsHorizontalScrollIndicator={false}
-          snapToInterval={104} // largura aproximada de 3 cards, ajuste conforme necessidade
+          snapToInterval={104}
           decelerationRate="fast"
           keyExtractor={(item) => `${item.month}-${item.year}`}
           initialScrollIndex={initialMonthIndex}
-          getItemLayout={
-            (data, index) => ({
-              length: 80,
-              offset: 80 * index,
-              index,
-            }) // necessário para initialScrollIndex funcionar
-          }
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => {
-                setSelectedMonth(item.month);
-                setSelectedYear(item.year);
-              }}
-              style={[
-                styles.monthCard,
-                item.month === selectedMonth && item.year === selectedYear
-                  ? styles.monthCardActive
-                  : null,
-              ]}
-            >
-              <Text
-                style={
-                  item.month === selectedMonth && item.year === selectedYear
-                    ? styles.monthTextActive
-                    : styles.monthText
-                }
+          getItemLayout={(data, index) => ({
+            length: 80,
+            offset: 80 * index,
+            index,
+          })}
+          renderItem={({ item }) => {
+            const isActive =
+              item.month === selectedMonth && item.year === selectedYear;
+
+            return (
+              <Pressable
+                onPress={() => {
+                  setSelectedMonth(item.month);
+                  setSelectedYear(item.year);
+                }}
+                style={[styles.monthCard, isActive && styles.monthCardActive]}
               >
-                {item.label}
-              </Text>
-            </Pressable>
-          )}
+                <Text
+                  style={isActive ? styles.monthTextActive : styles.monthText}
+                >
+                  {item.label}
+                </Text>
+              </Pressable>
+            );
+          }}
         />
       </View>
-      {/* Adicionado para garantir que ocupe a tela */}
+    );
+  };
+
+  // ============================
+  // TransactionCard (INLINE)
+  // ============================
+  const TransactionCard = ({ item, dailyTotal, route, styles }: any) => {
+    return (
+      <Pressable
+        onPress={() =>
+          route.push({
+            pathname: "/(panel)/transactions/[id]/edit/page",
+            params: { id: item.id.toString() },
+          })
+        }
+        style={styles.card}
+      >
+        <View style={styles.cardHeader}>
+          <View style={styles.iconContainer}>
+            <FontAwesome5 name="utensils" size={20} color="#555" />
+          </View>
+
+          <View style={styles.detailsContainer}>
+            <Text style={styles.description}>{item.description}</Text>
+
+            <Text style={styles.categoryAccount}>
+              {item.category_id === 1 ? "Receitas" : "Alimentação"}
+              {" | "}
+              {item.account_id === 1
+                ? "Cartão de Crédito - Nubank"
+                : "Carteira"}
+              {item.installment && item.installment_number
+                ? ` | Parcela ${item.installment_number}`
+                : ""}
+            </Text>
+          </View>
+
+          <Text
+            style={[
+              styles.amount,
+              item.type_id === 2 ? styles.expenseAmount : styles.incomeAmount,
+            ]}
+          >
+            {item.type_id === 2 ? "-" : "+"} R${" "}
+            {Number(item.amount).toFixed(2).replace(".", ",")}
+          </Text>
+        </View>
+
+        <View style={styles.dailyTotalContainer}>
+          <Text style={styles.dailyTotalText}>
+            R$ {Math.abs(item.running_total).toFixed(2).replace(".", ",")}
+          </Text>
+        </View>
+      </Pressable>
+    );
+  };
+
+  // ============================
+  // TransactionSection (INLINE)
+  // ============================
+  const TransactionSection = ({ section, route, styles }: any) => {
+    if (section.data.length === 0) return null;
+
+    const dailyTotal = section.data.reduce((acc: number, t: any) => {
+      const value = Number(t.amount);
+      return t.type_id === 2 ? acc - value : acc + value;
+    }, 0);
+
+    const weekday = new Date(section.data[0].date)
+      .toLocaleDateString("pt-BR", {
+        weekday: "long",
+      })
+      .toUpperCase();
+
+    return (
+      <View>
+        <Text style={styles.sectionHeader}>
+          {section.date.toUpperCase()}, {weekday}
+        </Text>
+
+        {section.data.map((item: any) => (
+          <TransactionCard
+            key={item.id}
+            item={item}
+            dailyTotal={dailyTotal}
+            route={route}
+            styles={styles}
+          />
+        ))}
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.fullScreenContainer}>
+      <MonthSelector
+        listRef={listRef}
+        months={months}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+        setSelectedMonth={setSelectedMonth}
+        setSelectedYear={setSelectedYear}
+        initialMonthIndex={initialMonthIndex}
+        styles={styles}
+      />
+
       {transactions && transactions.length > 0 ? (
         <FlatList
           data={sections}
           keyExtractor={(item) => item.date}
           contentContainerStyle={styles.listContentContainer}
-          renderItem={({ item: section }) => {
-            // calcula total do dia
-            const dailyTotal = section.data.reduce((acc, t) => {
-              const value = Number(t.amount);
-              return t.type_id === 2 ? acc - value : acc + value; // type_id=2 → despesa
-            }, 0);
-
-            return (
-              <>
-                {section.data.length > 0 && (
-                  <View>
-                    <Text style={styles.sectionHeader}>
-                      {section.date.toUpperCase()},{" "}
-                      {new Date(section.data[0].date)
-                        .toLocaleDateString("pt-BR", { weekday: "long" })
-                        .toUpperCase()}
-                    </Text>
-
-                    {section.data.map((item: Transaction) => (
-                      <Pressable
-                        key={item.id.toString()}
-                        onPress={() =>
-                          route.push({
-                            pathname: "/(panel)/transactions/[id]/edit/page",
-                            params: { id: item.id.toString() },
-                          })
-                        }
-                        style={styles.card}
-                      >
-                        <View style={styles.cardHeader}>
-                          <View style={styles.iconContainer}>
-                            <FontAwesome5
-                              name="utensils"
-                              size={20}
-                              color="#555"
-                            />
-                          </View>
-                          <View style={styles.detailsContainer}>
-                            <Text style={styles.description}>
-                              {item.description}
-                            </Text>
-                            <Text style={styles.categoryAccount}>
-                              {item.category_id === 1
-                                ? "Receitas"
-                                : "Alimentação"}{" "}
-                              |{" "}
-                              {item.account_id === 1
-                                ? "Cartão de Crédito - Nubank"
-                                : "Carteira"}
-                              {item.installment && item.installment_number
-                                ? ` | Parcela ${item.installment_number}`
-                                : ""}
-                            </Text>
-                          </View>
-                          <Text
-                            style={[
-                              styles.amount,
-                              item.type_id === 2
-                                ? styles.expenseAmount
-                                : styles.incomeAmount,
-                            ]}
-                          >
-                            {item?.type_id === 2 ? "-" : "+"} R${" "}
-                            {Number(item.amount).toFixed(2).replace(".", ",")}
-                          </Text>
-                        </View>
-
-                        {/* total do dia (aparece em todas as transações do mesmo dia) */}
-                        <View style={styles.dailyTotalContainer}>
-                          <Text style={[styles.dailyTotalText]}>
-                            {dailyTotal < 0 ? "-" : "+"} R${" "}
-                            {Math.abs(dailyTotal).toFixed(2).replace(".", ",")}
-                          </Text>
-                        </View>
-                      </Pressable>
-                    ))}
-                  </View>
-                )}
-              </>
-            );
-          }}
+          renderItem={({ item: section }) => (
+            <TransactionSection
+              section={section}
+              route={route}
+              styles={styles}
+            />
+          )}
         />
       ) : (
         <Text style={styles.noTransactionsText}>
           Nenhuma transação encontrada.
         </Text>
       )}
+
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => {
-          route.push("/(panel)/transactions/create/page");
-        }}
+        onPress={() => route.push("/(panel)/transactions/create/page")}
         color="#fff"
         customSize={56}
         variant="primary"

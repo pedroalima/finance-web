@@ -103,14 +103,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     color: "#fff",
   },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    marginBottom: 12,
-    paddingVertical: 4,
-    paddingHorizontal: 2,
-    fontSize: 16,
-  },
+  // input: {
+  //   borderBottomWidth: 1,
+  //   borderBottomColor: "#ccc",
+  //   marginBottom: 12,
+  //   paddingVertical: 4,
+  //   paddingHorizontal: 2,
+  //   fontSize: 16,
+  // },
   input_error: {
     borderBottomColor: "#E53935",
   },
@@ -142,6 +142,109 @@ const styles = StyleSheet.create({
   monthTextActive: {
     color: "#fff",
     fontWeight: "bold",
+  },
+
+  section: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 12,
+    color: "#333",
+  },
+
+  fieldContainer: {
+    flex: 1,
+  },
+
+  label: {
+    marginBottom: 6,
+    color: "#555",
+    fontWeight: "500",
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    backgroundColor: "#FAFAFA",
+  },
+
+  amountInput: {
+    fontSize: 24,
+    fontWeight: "600",
+    textAlign: "center",
+    height: 60,
+  },
+
+  errorText: {
+    color: "red",
+    marginTop: 4,
+    fontSize: 12,
+  },
+
+  dateButton: {
+    height: 56,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    backgroundColor: "#FAFAFA",
+  },
+
+  dateText: {
+    color: "#333",
+    fontWeight: "500",
+  },
+
+  switchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  actionBar: {
+    gap: 12,
+    marginTop: 8,
+    marginBottom: 40,
+  },
+
+  submitButton: {
+    backgroundColor: "#5E17EB",
+    padding: 16,
+    borderRadius: 14,
+    alignItems: "center",
+  },
+
+  submitText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  deleteButton: {
+    backgroundColor: "#FF3B30",
+    padding: 16,
+    borderRadius: 14,
+    alignItems: "center",
+  },
+
+  deleteText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 
