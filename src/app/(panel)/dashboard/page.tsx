@@ -4,8 +4,6 @@ import Transactions from "../transactions/page";
 import Settings from "../settings/page";
 import { BottomNavigation } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { View } from "react-native";
-import { Header } from "../../components/Header";
 
 export default function Dashboard() {
   const [index, setIndex] = useState(0);
@@ -25,6 +23,7 @@ export default function Dashboard() {
         return null;
     }
   };
+
   return (
     <>
       {renderScene({ route: routes[index] })}
