@@ -6,18 +6,20 @@ import {
   getTransactionById,
   updateTransaction,
 } from "@/src/service/transactionsService";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { parseCurrencyToNumber } from "@/src/utils/date";
 import { useNavigation } from "expo-router";
 import { useRoute } from "@react-navigation/native";
 import { TransactionTypes } from "@/src/enums/transactions";
 import { ActivityIndicator, Surface } from "react-native-paper";
 import TransactionEditForm from "@/src/app/components/form/TransactionCreateAndEditForm";
+import { invalidateByEvent } from "@/src/lib/query-invalidator";
 
 export default function EditTransactionPage() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { id } = route.params;
+  const { id } = route.params as { id: string };
+  const queryClient = useQueryClient();
 
   // Form
   const { setValue } = useForm({
@@ -69,6 +71,7 @@ export default function EditTransactionPage() {
     },
     onSuccess: () => {
       Alert.alert("Sucesso", "Transação atualizada com sucesso!");
+      invalidateByEvent(queryClient, "TRANSACTION_UPDATED");
       navigation.goBack();
     },
     onError: (error) => {
@@ -83,6 +86,7 @@ export default function EditTransactionPage() {
     },
     onSuccess: () => {
       Alert.alert("Sucesso", "Transação excluida com sucesso!");
+      invalidateByEvent(queryClient, "TRANSACTION_UPDATED");
       navigation.goBack();
     },
     onError: (error) => {
@@ -110,7 +114,7 @@ export default function EditTransactionPage() {
             deleteMutation.mutate(transactionId);
           },
         },
-      ]
+      ],
     );
   };
 

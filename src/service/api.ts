@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Criação do client Axios
 export const api = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: process.env.EXPO_PUBLIC_API_BASE_URL,
   timeout: 20000,
 });
 

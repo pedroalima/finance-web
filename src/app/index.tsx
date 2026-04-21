@@ -37,7 +37,9 @@ export default function Home() {
         router.replace("/(panel)/dashboard/page");
       }
     },
-    onError: () => alert("Credenciais inválidas."),
+    onError: (error) => {
+      alert(error.message || "Credenciais inválidas.");
+    },
   });
 
   const onSubmit = (data: LoginData) => mutate(data);

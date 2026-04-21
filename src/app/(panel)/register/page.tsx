@@ -92,7 +92,10 @@ export default function Register() {
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 20 }}>
+      <TouchableOpacity
+        onPress={() => router.push("/")}
+        style={{ marginTop: 20 }}
+      >
         <Text style={{ color: "#555" }}>Já tem uma conta? Faça login</Text>
       </TouchableOpacity>
     </View>

@@ -9,6 +9,7 @@ import { formatDateToApi, parseCurrencyToNumber } from "@/src/utils/date";
 import { createTransaction } from "@/src/service/transactionsService";
 import { Transaction } from "@/src/types/transactions";
 import TransactionCreateForm from "@/src/app/components/form/TransactionCreateAndEditForm";
+import { invalidateByEvent } from "@/src/lib/query-invalidator";
 
 export default function CreateTransaction() {
   const navigation = useNavigation();
@@ -36,7 +37,7 @@ export default function CreateTransaction() {
     onSuccess: (response) => {
       if (response.status === 200) {
         Alert.alert("Sucesso", response.data.message);
-        queryClient.invalidateQueries({ queryKey: ["transactions"] });
+        invalidateByEvent(queryClient, "TRANSACTION_UPDATED");
         navigation.goBack();
       }
     },
